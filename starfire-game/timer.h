@@ -7,9 +7,7 @@ class Timer {
     uint32_t _delay;
 
   public:
-    Timer(uint32_t delay) {
-      this->_delay = delay;
-    }
+    Timer(uint32_t delay) : _delay(delay) {}
 
     // Returns true if delay has been reached.
     bool tick() {

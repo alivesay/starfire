@@ -1,16 +1,21 @@
 #include "globals.h"
-#include "entity.h"
 #include "starfield.h"
 #include "ship.h"
+#include "statusbar.h"
+#include "entity.h"
 
-Point ship_loc;
-Point bullet_loc;
+Entity scene;
 Starfield starfield;
 Ship ship;
+StatusBar statusBar;
 
 void setup() {
   arduboy.begin();
   arduboy.setFrameRate(60);
+
+  scene.addChild(&statusBar);
+  scene.addChild(&ship);
+  scene.addChild(&starfield);
 }
 
 void loop() {
@@ -18,14 +23,8 @@ void loop() {
 
   arduboy.clear();
 
-  starfield.render();
-  ship.update();
-  ship.render();
-
-  arduboy.setTextColor(WHITE);
-  arduboy.setTextBackground(BLACK);
-  arduboy.print("cpu: ");
-  arduboy.print(arduboy.cpuLoad());
+  scene.updateChildren();
+  scene.renderChildren();
 
   if(arduboy.pressed(A_BUTTON)) {
     arduboy.fillRoundRect(1, 31, 126, 32, 1, WHITE);

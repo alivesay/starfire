@@ -1,6 +1,5 @@
 #ifndef LIST_H
 #define LIST_H
-#include <inttypes.h>
 
 template <class T> class List {
   public:

@@ -49,14 +49,12 @@ class Sprite : public Entity {
         if (this->_currentFrame >= this->_frameCount) this->_currentFrame = 0;
       }
 
-      Sprites::drawExternalMask(this->getX(),
-                                this->getY(),
+      Sprites::drawExternalMask(this->getScreenX(),
+                                this->getScreenY(),
                                 this->_bitmap,
                                 this->_bitmapMask,
                                 this->_currentFrame,
                                 this->_currentFrame);
-
-//      Sprites::drawPlusMask(this->getX(), this->getY(), ship_plus_mask, this->_currentFrame);
     }
 
     void autoPlay(uint32_t delay) {

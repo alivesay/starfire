@@ -3,6 +3,7 @@
 
 #include "globals.h"
 #include "position.h"
+#include "entity.h"
 
 #define STARFIELD_PARALLAX_LEVELS 4
 #define STARFIELD_PARALLAX_RATES {1, 2, 4, 8}
@@ -11,11 +12,6 @@
 
 class Starfield : public Entity {
   private:
-    struct SPoint {
-      uint8_t x;
-      uint8_t y;
-    };
-
     SPoint _stars[STARFIELD_NUM_STARS];
     const uint8_t _parallax_rates[STARFIELD_PARALLAX_LEVELS] = STARFIELD_PARALLAX_RATES;
     const uint8_t _parallax_counts[STARFIELD_PARALLAX_LEVELS] = STARFIELD_PARALLAX_COUNTS;
@@ -29,7 +25,7 @@ class Starfield : public Entity {
     }
 
     virtual void update() {}
-    
+
     virtual void render() {
       uint16_t si = 0;
 
