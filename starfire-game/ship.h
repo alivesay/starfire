@@ -24,12 +24,13 @@ class ShipShield : public Entity {
       delete this->_shieldTimer;
     }
 
-    virtual void update() {}
-
-    virtual void render() {
+    virtual void update() {
       if (this->_shieldTimer->tick()) {
         this->_drawShield = !this->_drawShield;
       }
+    }
+
+    virtual void render() {
       if (this->_drawShield) arduboy.drawCircle(this->getX() + 9, this->getY() + 4, 9);
     }
 };
@@ -41,7 +42,7 @@ class Ship : public Entity {
 
   public:
     Ship() {
-      this->_sprite.setBitmap(ship_plus_mask, 3);
+      this->_sprite.setBitmap(ship_bitmap, ship_mask, 3);
       this->_sprite.autoPlay(SHIP_FRAME_DELAY);
       this->setPosition(10, 30);
     }
@@ -85,11 +86,13 @@ class Ship : public Entity {
       if(arduboy.pressed(DOWN_BUTTON)) {
           this->setPosition(this->getX(), min(this->getY() + 1, HEIGHT - 9));
       }
+
+      this->_shipShield.update();
     }
 
     virtual void render() {
-      this->_shipShield.render();
       this->_sprite.render();
+      this->_shipShield.render();
     }
 };
 
