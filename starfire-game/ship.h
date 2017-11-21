@@ -44,8 +44,12 @@ class ShipShield : public Entity {
 
 class BulletEmitter : public Entity {
   public:
-    BulletEmitter() : _bulletSpeed(5), _fireDelay(100), _bulletTimer(20) {
-      this->setPosition(SHIP_BULLET_X_OFFSET, SHIP_BULLET_Y_OFFSET);
+    BulletEmitter() :
+    _bulletSpeed(5),
+    _fireDelay(100),
+    _bulletTimer(20) {
+      this->pos.x = SHIP_BULLET_X_OFFSET;
+      this->pos.y = SHIP_BULLET_Y_OFFSET;
     }
 
     ~BulletEmitter() {
@@ -97,7 +101,8 @@ class Ship : public Entity {
 
   public:
     Ship() {
-      this->setPosition(10, 30);
+      this->pos.x = 10;
+      this->pos.y = 30;
       this->_sprite.setBitmap(ship_bitmap, ship_mask, 3);
       this->_sprite.autoPlay(SHIP_FRAME_DELAY);
 
@@ -108,16 +113,16 @@ class Ship : public Entity {
 
     virtual void update() {
       if(arduboy.pressed(LEFT_BUTTON)) {
-        this->setX(max(this->getX() - 1, 0));
+        this->pos.x = max(this->pos.x - 1, 0);
       }
       if(arduboy.pressed(RIGHT_BUTTON)) {
-          this->setX(min(this->getX() + 1, WIDTH - SHIP_SPRITE_VISIBLE_WIDTH));
+          this->pos.x = min(this->pos.x + 1, WIDTH - SHIP_SPRITE_VISIBLE_WIDTH);
       }
       if(arduboy.pressed(UP_BUTTON)) {
-          this->setY(max(this->getY() - 1, 0));
+          this->pos.y = max(this->pos.y - 1, 0);
       }
       if(arduboy.pressed(DOWN_BUTTON)) {
-          this->setY(min(this->getY() + 1, HEIGHT - SHIP_SPRITE_VISIBLE_HEIGHT));
+          this->pos.y = min(this->pos.y + 1, HEIGHT - SHIP_SPRITE_VISIBLE_HEIGHT);
       }
 
       this->updateChildren();

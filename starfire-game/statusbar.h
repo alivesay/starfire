@@ -9,10 +9,7 @@
 
 class Hearts : public Entity {
   public:
-    Hearts() :
-    _bitmap(heart_bitmap),
-    _bitmapMask(heart_mask),
-    _fillLevel(STATUSBAR_INITIAL_HEALTH) {}
+    Hearts() : _fillLevel(STATUSBAR_INITIAL_HEALTH) {}
 
     virtual void update() {}
 
@@ -20,10 +17,10 @@ class Hearts : public Entity {
       uint8_t frame;
       for (register uint8_t i = 0; i < STATUSBAR_MAX_HEALTH; i++) {
         frame = (i >= this->_fillLevel) ? 1 : 0;
-        Sprites::drawExternalMask(this->getX() + (i * (pgm_read_byte(&heart_bitmap[0]) + 1)),
-                                  this->getY(),
-                                  this->_bitmap,
-                                  this->_bitmapMask,
+        Sprites::drawExternalMask(this->pos.x + (i * (pgm_read_byte(&heart_bitmap[0]) + 1)),
+                                  this->pos.y,
+                                  heart_bitmap,
+                                  heart_mask,
                                   frame,
                                   frame);
       }
@@ -34,8 +31,6 @@ class Hearts : public Entity {
     }
 
   private:
-    uint8_t* _bitmap;
-    uint8_t* _bitmapMask;
     uint8_t _fillLevel;
 };
 

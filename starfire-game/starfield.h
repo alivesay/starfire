@@ -2,7 +2,6 @@
 #define STARFIELD_H
 
 #include "globals.h"
-#include "position.h"
 #include "entity.h"
 
 #define STARFIELD_PARALLAX_LEVELS 4
