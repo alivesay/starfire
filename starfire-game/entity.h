@@ -2,7 +2,7 @@
 #define ENTITY_H
 
 #include "globals.h"
-#include "scene.h"
+#include "list.h"
 #include "position.h"
 
 class IUpdateable {

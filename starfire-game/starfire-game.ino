@@ -3,10 +3,12 @@
 #include "ship.h"
 #include "statusbar.h"
 #include "entity.h"
+#include "enemy.h"
 
 Entity scene;
 Starfield starfield;
 Ship ship;
+Enemy enemy;
 StatusBar statusBar;
 
 void setup() {
@@ -15,6 +17,7 @@ void setup() {
 
   scene.addChild(&statusBar);
   scene.addChild(&ship);
+  scene.addChild(&enemy);
   scene.addChild(&starfield);
 }
 
