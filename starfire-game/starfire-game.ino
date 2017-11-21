@@ -23,8 +23,8 @@ void loop() {
 
   arduboy.clear();
 
-  scene.updateChildren();
-  scene.renderChildren();
+  scene.update();
+  scene.render();
 
   if(arduboy.pressed(A_BUTTON)) {
     arduboy.fillRoundRect(1, 31, 126, 32, 1, WHITE);

@@ -17,7 +17,7 @@ template <class T> class List {
     }
 
     List(const List& list): _head(NULL) {
-      for (const ListNode* i = list.begin(); i != list.end(); i = i->next()) {
+      for (const ListNode* i = list.begin(); i != list.end(); i = i->next) {
         this->pushFront(i->data);
       }
       this->reverse();
@@ -35,6 +35,66 @@ template <class T> class List {
       ListNode* p = new ListNode(data, this->_head);
       this->_head = p;
       this->_length++;
+    }
+
+    void destroy() {
+      while (!this->empty()) {
+        if (this->_head) {
+          ListNode* p = this->_head;
+          this->_head = this->_head->next;
+          delete p->data;
+          delete p;
+          this->_length--;
+        }
+      }
+    }
+
+    void destroy(ListNode* node) {
+      if (this->empty()) return;
+      ListNode* temp = this->_head;
+
+      if (this->_head == node) {
+        this->_head = this->_head->next;
+        delete temp->data;
+        delete temp;
+        return;
+      }
+
+      for (const ListNode* i = this->begin(); i != NULL && i != node; i = i->next) {
+        temp = temp->next;
+      }
+
+      if (temp == NULL || temp->next == NULL) return;
+
+      ListNode* next = temp->next->next;
+
+      delete temp->next->data;
+      delete temp->next;
+      temp->next = next;
+    }
+
+    void destroy(T data) {
+      if (this->empty()) return;
+      ListNode* temp = this->_head;
+
+      if (this->_head->data == data) {
+        this->_head = this->_head->next;
+        delete temp->data;
+        delete temp;
+        return;
+      }
+
+      for (const ListNode* i = this->_bullets.begin(); i != NULL && i->data != data; i = i->next) {
+        temp = temp->next;
+      }
+
+      if (temp == NULL || temp->next == NULL) return;
+
+      ListNode* next = temp->next->next;
+
+      delete temp->data;
+      delete temp->next;
+      temp->next = next;
     }
 
     void popFront() {

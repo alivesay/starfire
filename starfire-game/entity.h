@@ -78,8 +78,13 @@ class Entity : public IEntity {
       }
     }
 
-    virtual void update() {}
-    virtual void render() {}
+    virtual void update() {
+      this->updateChildren();
+    }
+
+    virtual void render() {
+      this->renderChildren();
+    }
 
     const int16_t getScreenX() {
       return (this->_parent) ? this->_parent->getX() + this->getX() : this->getX();

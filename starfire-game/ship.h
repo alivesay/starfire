@@ -14,6 +14,8 @@
 #define SHIP_FRAME_DELAY 100
 #define SHIP_SPRITE_VISIBLE_WIDTH 13
 #define SHIP_SPRITE_VISIBLE_HEIGHT 9
+#define SHIP_BULLET_X_OFFSET 16
+#define SHIP_BULLET_Y_OFFSET 3
 
 class ShipShield : public Entity {
   private:
@@ -41,21 +43,57 @@ class ShipShield : public Entity {
 };
 
 class BulletEmitter : public Entity {
-  List<SPoint*> _bullets;
-
-  virtual void update() {
-    if (arduboy.pressed(B_BUTTON)) {
-      this->_bullets.pushFront(new SPoint(20, 20));
+  public:
+    BulletEmitter() : _bulletSpeed(5), _fireDelay(100), _bulletTimer(20) {
+      this->setPosition(SHIP_BULLET_X_OFFSET, SHIP_BULLET_Y_OFFSET);
     }
-  }
-  virtual void render() {
-  }
+
+    ~BulletEmitter() {
+        this->_bullets.destroy();
+    }
+
+    virtual void update() {
+      if (this->_fireDelay.tick() && arduboy.pressed(B_BUTTON)) {
+        this->_bullets.pushFront(new SPoint(this->getScreenX(), this->getScreenY()));
+      }
+
+      if (!(_bulletTimer.tick())) return;
+
+      for (const List<SPoint*>::ListNode* i = this->_bullets.begin();
+           i != NULL; i = i->next) {
+        i->data->x += this->_bulletSpeed;
+
+        // offscreen?
+        if (i->data->x >= WIDTH) {
+          this->_bullets.destroy(i);
+        }
+      }
+    }
+
+    virtual void render() {
+      for (const List<SPoint*>::ListNode* i = this->_bullets.begin();
+           i != NULL; i = i->next) {
+        Sprites::drawExternalMask(i->data->x,
+                                  i->data->y,
+                                  bullet_bitmap,
+                                  bullet_mask,
+                                  0,
+                                  0);
+      }
+    }
+
+  private:
+    List<SPoint*> _bullets;
+    uint8_t _bulletSpeed;
+    Timer _fireDelay;
+    Timer _bulletTimer;
 };
 
 class Ship : public Entity {
   private:
     Sprite _sprite;
     ShipShield _shipShield;
+    BulletEmitter _bulletEmitter;
 
   public:
     Ship() {
@@ -65,6 +103,7 @@ class Ship : public Entity {
 
       this->addChild(&this->_shipShield);
       this->addChild(&this->_sprite);
+      this->addChild(&this->_bulletEmitter);
     }
 
     virtual void update() {
