@@ -106,9 +106,9 @@ class Ship : public Entity {
       this->_sprite.setBitmap(ship_bitmap, ship_mask, 3);
       this->_sprite.autoPlay(SHIP_FRAME_DELAY);
 
-      this->addChild(&this->_shipShield);
-      this->addChild(&this->_sprite);
-      this->addChild(&this->_bulletEmitter);
+      this->_shipShield.setParent(this);
+      this->_sprite.setParent(this);
+      this->_bulletEmitter.setParent(this);
     }
 
     virtual void update() {
@@ -125,12 +125,15 @@ class Ship : public Entity {
           this->pos.y = min(this->pos.y + 1, HEIGHT - SHIP_SPRITE_VISIBLE_HEIGHT);
       }
 
-      this->updateChildren();
+      this->_sprite.update();
+      this->_shipShield.update();
+      this->_bulletEmitter.update();
     }
 
     virtual void render() {
       this->_sprite.render();
-      this->renderChildren();
+      this->_shipShield.render();
+      this->_bulletEmitter.render();
     }
 };
 

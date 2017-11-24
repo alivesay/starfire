@@ -16,13 +16,6 @@ template <class T> class List {
       this->clear();
     }
 
-    List(const List& list): _head(NULL) {
-      for (const ListNode* i = list.begin(); i != list.end(); i = i->next) {
-        this->pushFront(i->data);
-      }
-      this->reverse();
-    }
-
     void clear() {
       while (!this->empty()) this->popFront();
     }
@@ -57,6 +50,7 @@ template <class T> class List {
         this->_head = this->_head->next;
         delete temp->data;
         delete temp;
+        this->_length--;
         return;
       }
 
@@ -71,6 +65,7 @@ template <class T> class List {
       delete temp->next->data;
       delete temp->next;
       temp->next = next;
+      this->_length--;
     }
 
     void destroy(T data) {
@@ -81,10 +76,11 @@ template <class T> class List {
         this->_head = this->_head->next;
         delete temp->data;
         delete temp;
+        this->_length--;
         return;
       }
 
-      for (const ListNode* i = this->_bullets.begin(); i != NULL && i->data != data; i = i->next) {
+      for (const ListNode* i = this->begin(); i != NULL && i->data != data; i = i->next) {
         temp = temp->next;
       }
 
@@ -95,6 +91,7 @@ template <class T> class List {
       delete temp->data;
       delete temp->next;
       temp->next = next;
+      this->_length--;
     }
 
     void popFront() {

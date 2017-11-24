@@ -30,6 +30,7 @@ const uint8_t PROGMEM starfield_lookup[] =
 #define STARFIELD_PARALLAX_RATES {1, 2, 4, 8}
 #define STARFIELD_PARALLAX_COUNTS {50, 30, 20, 10}
 #define STARFIELD_NUM_STARS 110
+#define STARFIELD_TIMER_RATE 15
 
 class Starfield : public Entity {
   private:
@@ -43,12 +44,12 @@ class Starfield : public Entity {
     _parallax_rates(STARFIELD_PARALLAX_RATES),
     _parallax_counts(STARFIELD_PARALLAX_COUNTS),
     _offset(0),
-    _timer(20) {}
+    _timer(STARFIELD_TIMER_RATE) {}
 
     virtual void update() {
       if (this->_timer.tick()) {
         this->_offset++;
-        if (this->_offset == 128) this->_offset = 0;
+        if (this->_offset == WIDTH) this->_offset = 0;
       }
     }
 
