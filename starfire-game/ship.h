@@ -5,7 +5,6 @@
 #include "entity.h"
 #include "timer.h"
 #include "sprite.h"
-#include "list.h"
 
 #define SHIP_SHIELD_DELAY 200
 #define SHIP_SHIELD_X_OFFSET 9
@@ -16,6 +15,7 @@
 #define SHIP_SPRITE_VISIBLE_HEIGHT 9
 #define SHIP_BULLET_X_OFFSET 16
 #define SHIP_BULLET_Y_OFFSET 3
+#define SHIP_MAX_BULLETS 7
 
 class ShipShield : public Entity {
   private:
@@ -42,55 +42,74 @@ class ShipShield : public Entity {
     }
 };
 
+class Bullet : public Entity {
+  public:
+    virtual void render() {
+      Sprites::drawExternalMask(this->pos.x,
+                                this->pos.y,
+                                bullet_bitmap,
+                                bullet_mask,
+                                0,
+                                0);
+    }
+};
+
 class BulletEmitter : public Entity {
   public:
     BulletEmitter() :
     _bulletSpeed(5),
     _fireDelay(100),
-    _bulletTimer(20) {
+    _bulletTimer(20),
+    _activeCount(0) {
       this->pos.x = SHIP_BULLET_X_OFFSET;
       this->pos.y = SHIP_BULLET_Y_OFFSET;
     }
 
-    ~BulletEmitter() {
-        this->_bullets.destroy();
-    }
-
     virtual void update() {
-      if (this->_fireDelay.tick() && arduboy.pressed(B_BUTTON)) {
-        this->_bullets.pushFront(new SPoint(this->getScreenX(), this->getScreenY()));
+      if (this->_fireDelay.tick() && arduboy.pressed(B_BUTTON) && this->_activeCount < SHIP_MAX_BULLETS) {
+
+        Bullet* bullet = this->_getFreeBullet();
+        if (bullet != nullptr) {
+          bullet->pos.x = this->getScreenX();
+          bullet->pos.y = this->getScreenY();
+          bullet->setActive(true);
+          this->_activeCount++;
+        }
       }
 
-      if (!(_bulletTimer.tick())) return;
+      if (!(this->_bulletTimer.tick())) return;
 
-      for (const List<SPoint*>::ListNode* i = this->_bullets.begin();
-           i != NULL; i = i->next) {
-        i->data->x += this->_bulletSpeed;
-
-        // offscreen?
-        if (i->data->x >= WIDTH) {
-          this->_bullets.destroy(i);
+      for (uint8_t i = 0; i < SHIP_MAX_BULLETS; i++) {
+        if (this->_bullets[i].isActive()) {
+          this->_bullets[i].pos.x += this->_bulletSpeed;
+          if (this->_bullets[i].pos.x >= WIDTH) {
+            this->_bullets[i].setActive(false);
+            this->_activeCount--;
+          }
         }
       }
     }
 
     virtual void render() {
-      for (const List<SPoint*>::ListNode* i = this->_bullets.begin();
-           i != NULL; i = i->next) {
-        Sprites::drawExternalMask(i->data->x,
-                                  i->data->y,
-                                  bullet_bitmap,
-                                  bullet_mask,
-                                  0,
-                                  0);
+      for (uint8_t i = 0; i < SHIP_MAX_BULLETS; i++) {
+        if (this->_bullets[i].isActive()) this->_bullets[i].render();
       }
     }
 
   private:
-    List<SPoint*> _bullets;
+    Bullet _bullets[SHIP_MAX_BULLETS];
     uint8_t _bulletSpeed;
     Timer _fireDelay;
     Timer _bulletTimer;
+    uint8_t _activeCount;
+
+    Bullet* _getFreeBullet() {
+      for (uint8_t i = 0; i < SHIP_MAX_BULLETS; i++) {
+        if (!(this->_bullets[i].isActive())) return &this->_bullets[i];
+      }
+
+      return nullptr;
+    }
 };
 
 class Ship : public Entity {
