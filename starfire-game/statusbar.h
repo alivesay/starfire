@@ -17,12 +17,10 @@ class Hearts : public Entity {
       uint8_t frame;
       for (register uint8_t i = 0; i < STATUSBAR_MAX_HEALTH; i++) {
         frame = (i >= this->_fillLevel) ? 1 : 0;
-        Sprites::drawExternalMask(this->pos.x + (i * (pgm_read_byte(&heart_bitmap[0]) + 1)),
-                                  this->pos.y,
-                                  heart_bitmap,
-                                  heart_mask,
-                                  frame,
-                                  frame);
+        Sprites::drawPlusMask(this->pos.x + (i * (pgm_read_byte(&heart_plus_mask[0]) + 1)),
+                              this->pos.y,
+                              heart_plus_mask,
+                              frame);
       }
     }
 
@@ -44,6 +42,7 @@ class StatusBar : public Entity {
 
     virtual void render() {
       this->renderCPULoad();
+      this->renderRAM();
       this->_hearts.render();
     }
 
@@ -52,6 +51,16 @@ class StatusBar : public Entity {
       arduboy.setTextBackground(BLACK);
       arduboy.setCursor(0, 56);
       arduboy.print(arduboy.cpuLoad());
+    }
+
+    void renderRAM() {
+      extern int __heap_start, *__brkval;
+      int v;
+      int ram = (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
+      arduboy.setTextColor(WHITE);
+      arduboy.setTextBackground(BLACK);
+      arduboy.setCursor(32, 56);
+      arduboy.print(ram);
     }
 
     void setHealth(const uint8_t health) {

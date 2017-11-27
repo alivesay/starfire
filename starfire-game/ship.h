@@ -10,12 +10,15 @@
 #define SHIP_SHIELD_X_OFFSET 9
 #define SHIP_SHIELD_Y_OFFSET 4
 #define SHIP_SHIELD_RADIUS 9
-#define SHIP_FRAME_DELAY 100
+#define SHIP_FRAME_DELAY 40
 #define SHIP_SPRITE_VISIBLE_WIDTH 13
 #define SHIP_SPRITE_VISIBLE_HEIGHT 9
 #define SHIP_BULLET_X_OFFSET 16
 #define SHIP_BULLET_Y_OFFSET 3
 #define SHIP_MAX_BULLETS 7
+#define SHIP_LASER_X_OFFSET 16
+#define SHIP_LASER_Y_OFFSET -20
+#define SHIP_LASER_DELAY 40
 
 class ShipShield : public Entity {
   private:
@@ -45,12 +48,10 @@ class ShipShield : public Entity {
 class Bullet : public Entity {
   public:
     virtual void render() {
-      Sprites::drawExternalMask(this->pos.x,
-                                this->pos.y,
-                                bullet_bitmap,
-                                bullet_mask,
-                                0,
-                                0);
+      Sprites::drawPlusMask(this->pos.x,
+                            this->pos.y,
+                            bullet_plus_mask,
+                            0);
     }
 };
 
@@ -115,18 +116,28 @@ class BulletEmitter : public Entity {
 class Ship : public Entity {
   private:
     Sprite _sprite;
+    Sprite _laserSprite;
     ShipShield _shipShield;
     BulletEmitter _bulletEmitter;
+    bool _laserFiring;
 
   public:
-    Ship() {
+    Ship() :
+    _laserFiring(false) {
       this->pos.x = 10;
       this->pos.y = 30;
-      this->_sprite.setBitmap(ship_bitmap, ship_mask, 3);
+
+      this->_sprite.setBitmap(ship_plus_mask, 4);
       this->_sprite.autoPlay(SHIP_FRAME_DELAY);
+
+      this->_laserSprite.pos.x = SHIP_LASER_X_OFFSET;
+      this->_laserSprite.pos.y = SHIP_LASER_Y_OFFSET;
+      this->_laserSprite.setBitmap(laser_plus_mask, 2);
+      this->_laserSprite.autoPlay(SHIP_LASER_DELAY);
 
       this->_shipShield.setParent(this);
       this->_sprite.setParent(this);
+      this->_laserSprite.setParent(this);
       this->_bulletEmitter.setParent(this);
     }
 
@@ -144,12 +155,15 @@ class Ship : public Entity {
           this->pos.y = min(this->pos.y + 1, HEIGHT - SHIP_SPRITE_VISIBLE_HEIGHT);
       }
 
+      this->_laserFiring = arduboy.pressed(A_BUTTON);
+      if (this->_laserFiring) this->_laserSprite.update();
       this->_sprite.update();
       this->_shipShield.update();
       this->_bulletEmitter.update();
     }
 
     virtual void render() {
+      if (this->_laserFiring) this->_laserSprite.render();
       this->_sprite.render();
       this->_shipShield.render();
       this->_bulletEmitter.render();

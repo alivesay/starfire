@@ -9,10 +9,16 @@ Starfield starfield;
 Ship ship;
 EnemyEmitter enemy;
 StatusBar statusBar;
+Sprite title;
+
+bool atTitle = true;
 
 void setup() {
   arduboy.begin();
   arduboy.setFrameRate(60);
+
+  title.setBitmap(title_plus_mask, 2);
+  title.autoPlay(20);
 }
 
 void loop() {
@@ -20,6 +26,12 @@ void loop() {
 
   arduboy.clear();
 
+  if (atTitle) {
+    starfield.update();
+    starfield.render();
+    title.render();
+    if (arduboy.pressed(A_BUTTON) || arduboy.pressed(B_BUTTON)) atTitle = false;
+  } else {
   starfield.update();
   enemy.update();
   ship.update();
@@ -29,7 +41,7 @@ void loop() {
   enemy.render();
   ship.render();
   statusBar.render();
-
+/*
   if(arduboy.pressed(A_BUTTON)) {
     arduboy.fillRoundRect(1, 31, 126, 32, 1, WHITE);
     arduboy.setCursor(10, 40);
@@ -37,6 +49,7 @@ void loop() {
     arduboy.setTextBackground(WHITE);
     arduboy.print("Example Text");
   }
-
+*/
+}
   arduboy.display();
 }

@@ -5,12 +5,13 @@
 #include "timer.h"
 
 #define ENEMY_MAX_COUNT 5
+#define ENEMY_FRAME_DELAY 40
 
 class Enemy : public Entity {
   public:
     Enemy() {
-      this->_sprite.setBitmap(enemy_bitmap, enemy_mask, 2);
-      this->_sprite.autoPlay(SHIP_FRAME_DELAY);
+      this->_sprite.setBitmap(mark1_plus_mask, 2);
+      this->_sprite.autoPlay(ENEMY_FRAME_DELAY);
 
       this->_sprite.setParent(this);
     }
@@ -34,7 +35,7 @@ class EnemyEmitter : public Entity {
         Enemy* enemy = this->_getFreeEnemy();
         if (enemy != nullptr) {
           enemy->pos.x = 128;
-          enemy->pos.y = random(10, 50);
+          enemy->pos.y = random(10, 32);
           enemy->setActive(true);
           this->_enemyCount++;
         }

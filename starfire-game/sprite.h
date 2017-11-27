@@ -9,7 +9,6 @@ class Sprite : public Entity {
   private:
     Timer* _frameTimer;
     uint8_t* _bitmap;
-    uint8_t* _bitmapMask;
     uint8_t _currentFrame;
     uint8_t _frameCount;
     bool _isAutoPlay;
@@ -18,7 +17,6 @@ class Sprite : public Entity {
     Sprite() :
       _frameTimer(NULL),
       _bitmap(NULL),
-      _bitmapMask(NULL),
       _isAutoPlay(false),
       _currentFrame(0)
     {}
@@ -27,9 +25,8 @@ class Sprite : public Entity {
       if (this->_frameTimer) delete this->_frameTimer;
     }
 
-    void setBitmap(uint8_t* bitmap, uint8_t* mask, uint8_t frameCount) {
+    void setBitmap(uint8_t* bitmap, uint8_t frameCount) {
       this->_bitmap = bitmap;
-      this->_bitmapMask = mask;
       this->_frameCount = frameCount;
     }
 
@@ -49,12 +46,18 @@ class Sprite : public Entity {
         if (this->_currentFrame >= this->_frameCount) this->_currentFrame = 0;
       }
 
+      Sprites::drawPlusMask(this->getScreenX(),
+                            this->getScreenY(),
+                            this->_bitmap,
+                            this->_currentFrame);
+/*
       Sprites::drawExternalMask(this->getScreenX(),
                                 this->getScreenY(),
                                 this->_bitmap,
                                 this->_bitmapMask,
                                 this->_currentFrame,
                                 this->_currentFrame);
+*/
     }
 
     void autoPlay(uint32_t delay) {
