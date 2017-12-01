@@ -44,6 +44,7 @@ class StatusBar : public Entity {
       this->renderCPULoad();
       this->renderRAM();
       this->_hearts.render();
+      this->renderMeter();
     }
 
     void renderCPULoad() {
@@ -61,6 +62,14 @@ class StatusBar : public Entity {
       arduboy.setTextBackground(BLACK);
       arduboy.setCursor(32, 56);
       arduboy.print(ram);
+    }
+
+    void renderMeter() {
+      arduboy.drawRect(50, 0, 32, 5);
+      arduboy.fillRect(51, 1, 30, 3, BLACK);
+      static uint8_t level = 0;
+      if (++level == 31) level = 0;
+      arduboy.drawRect(51, 2, level, 1, WHITE);
     }
 
     void setHealth(const uint8_t health) {

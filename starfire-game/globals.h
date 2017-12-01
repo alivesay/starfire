@@ -11,6 +11,8 @@ struct SPoint {
   uint8_t y;
 };
 
+using FuncPtr = void (*)();
+
 #include "sprites.h"
 
 #endif // GLOBALS_H

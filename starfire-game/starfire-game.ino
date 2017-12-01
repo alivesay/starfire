@@ -3,11 +3,10 @@
 #include "ship.h"
 #include "statusbar.h"
 #include "entity.h"
-#include "enemy.h"
+#include "stages.h"
 
 Starfield starfield;
 Ship ship;
-EnemyEmitter enemy;
 StatusBar statusBar;
 Sprite title;
 
@@ -33,12 +32,12 @@ void loop() {
     if (arduboy.pressed(A_BUTTON) || arduboy.pressed(B_BUTTON)) atTitle = false;
   } else {
   starfield.update();
-  enemy.update();
+  Stages::update();
   ship.update();
   statusBar.update();
 
   starfield.render();
-  enemy.render();
+  Stages::render();
   ship.render();
   statusBar.render();
 /*

@@ -7,12 +7,40 @@
 #define ENEMY_MAX_COUNT 5
 #define ENEMY_FRAME_DELAY 40
 
+#define ENEMY_MARK_0 0
+#define ENEMY_MARK_1 1
+#define ENEMY_MARK_3 2
+
+struct EnemyData {
+    uint8_t* bitmap;
+    uint8_t frameCount;
+    uint8_t frameDelay;
+};
+
+const EnemyData enemyData[3] = {
+  // mark 0
+  {
+    bitmap: mark0_plus_mask,
+    frameCount: 2,
+    frameDelay: 40
+  },
+  // mark 1
+  {
+    bitmap: mark1_plus_mask,
+    frameCount: 2,
+    frameDelay: 40
+  },
+  // mark 3
+  {
+    bitmap: mark3_plus_mask,
+    frameCount: 2,
+    frameDelay: 40
+  },
+};
+
 class Enemy : public Entity {
   public:
     Enemy() {
-      this->_sprite.setBitmap(mark1_plus_mask, 2);
-      this->_sprite.autoPlay(ENEMY_FRAME_DELAY);
-
       this->_sprite.setParent(this);
     }
 
@@ -20,59 +48,19 @@ class Enemy : public Entity {
       this->_sprite.render();
     }
 
+    void setType(uint8_t type) {
+      this->_sprite.setBitmap(enemyData[type].bitmap, enemyData[type].frameCount);
+      this->_sprite.autoPlay(enemyData[type].frameDelay);
+      this->_type = type;
+    }
+
+    uint8_t getType() {
+      return this->_type;
+    }
+
   private:
     Sprite _sprite;
-};
-
-class EnemyEmitter : public Entity {
-  public:
-    EnemyEmitter() :
-    _spawnTimer(1000),
-    _frameTimer(20) {}
-
-    void update() {
-      if (this->_spawnTimer.tick() && this->_enemyCount < ENEMY_MAX_COUNT) {
-        Enemy* enemy = this->_getFreeEnemy();
-        if (enemy != nullptr) {
-          enemy->pos.x = 128;
-          enemy->pos.y = random(10, 32);
-          enemy->setActive(true);
-          this->_enemyCount++;
-        }
-      }
-
-      if (!(this->_frameTimer.tick())) return;
-
-      for (uint8_t i = 0; i < ENEMY_MAX_COUNT; i++) {
-        if (this->_enemies[i].isActive()) {
-          this->_enemies[i].pos.x--;
-          if (this->_enemies[i].pos.x <= -26) {
-            this->_enemies[i].setActive(false);
-            this->_enemyCount--;
-          }
-        }
-      }
-    }
-
-    void render() {
-      for (uint8_t i = 0; i < ENEMY_MAX_COUNT; i++) {
-        if (this->_enemies[i].isActive()) this->_enemies[i].render();
-      }
-    }
-
-  private:
-    Timer _spawnTimer;
-    Timer _frameTimer;
-    uint8_t _enemyCount;
-    Enemy _enemies[ENEMY_MAX_COUNT];
-
-    Enemy* _getFreeEnemy() {
-      for (uint8_t i = 0; i < ENEMY_MAX_COUNT; i++) {
-        if (!(this->_enemies[i].isActive())) return &this->_enemies[i];
-      }
-
-      return nullptr;
-    }
+    uint8_t _type;
 };
 
 #endif // ENEMY_H
