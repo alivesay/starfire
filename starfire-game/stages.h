@@ -67,9 +67,9 @@ class Stages {
 
     static void wave001() {
       if (Stages::checkWaveStart()) {
-        EnemyManager::spawnRandom(ENEMY_MARK_1, 0, ENEMY_MAX_COUNT, 20);
+        EnemyManager::spawnRandom(ENEMY_MARK_1, 0, 1, 20);
       }
-      EnemyManager::flySineRightLeft(0, ENEMY_MAX_COUNT);
+      EnemyManager::flyUpDown(0, 1);
       Stages::checkWaveEnd();
     }
 

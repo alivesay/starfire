@@ -35,7 +35,7 @@ class EnemyManager {
 
     static void flySineRightLeft(uint8_t start, uint8_t end) {
       for (uint8_t i = start; i < end; i++) {
-        enemies[i].pos.x--;
+        enemies[i].pos.x -= enemies[i].getSpeed();
         //enemies[i].pos.y = sin(arduboy.frameCount * 0.05) * 16 + 24;
         enemies[i].pos.y = sin(enemies[i].pos.x * 0.05) * 16 + 24;
       }
@@ -43,7 +43,39 @@ class EnemyManager {
 
     static void flyRightLeft(uint8_t start, uint8_t end) {
       for (uint8_t i = start; i < end; i++) {
-        enemies[i].pos.x--;
+        enemies[i].pos.x -= enemies[i].getSpeed();
+      }
+    }
+
+    static void flyUpDown(uint8_t start, uint8_t end) {
+      for (uint8_t i = start; i < end; i++) {
+        // fly in from the right
+        if (enemies[i].pos.x > (WIDTH - enemies[i].getWidth())) {
+          enemies[i].setState(EnemyState::FlyingIn);
+        } else {
+          // initial direction
+          if (enemies[i].getState() == EnemyState::FlyingIn) {
+            enemies[i].setState(EnemyState::FlyingUp);
+          }
+          // fly up and down
+          if (enemies[i].pos.y < 4) {
+            enemies[i].setState(EnemyState::FlyingDown);
+          } else if (enemies[i].pos.y > (HEIGHT - enemies[i].getHeight() - 4)) {
+            enemies[i].setState(EnemyState::FlyingUp);
+          }
+        }
+
+        switch (enemies[i].getState()) {
+          case EnemyState::FlyingIn:
+            enemies[i].pos.x -= enemies[i].getSpeed();
+            break;
+          case EnemyState::FlyingDown:
+            enemies[i].pos.y += enemies[i].getSpeed();
+            break;
+          case EnemyState::FlyingUp:
+            enemies[i].pos.y -= enemies[i].getSpeed();
+            break;
+        }
       }
     }
 };
