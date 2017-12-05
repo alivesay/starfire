@@ -9,14 +9,11 @@ Enemy enemies[ENEMY_MAX_COUNT];
 class EnemyManager {
   public:
     static void update() {
-      // detect collision
-      // enemy takes damage on hit
       for (uint8_t i = 0; i < ENEMY_MAX_COUNT; i++) {
         if (enemies[i].isActive() && enemies[i].pos.x <= -pgm_read_byte(&enemyData[enemies[i].getType()].bitmap[0])) {
           enemies[i].setActive(false);
         }
       }
-
     }
 
     static void render() {

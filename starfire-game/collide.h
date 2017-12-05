@@ -8,16 +8,11 @@
 class Collide {
   public:
     static void checkPlayerHit() {
-      // does ship collide with an enemy?
-      // does ship collide with an enemy bullet?
       for (uint8_t i = 0; i < ENEMY_MAX_COUNT; i++) {
-
       }
     }
 
     static void checkEnemyHit() {
-      // does player bullet collide with an enemy?
-      // does player lazer collide with an enemy?
       Rect enemyRect;
       Rect bulletRect;
       bool isCollision;
