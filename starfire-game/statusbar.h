@@ -6,6 +6,7 @@
 
 #define STATUSBAR_INITIAL_HEALTH 3
 #define STATUSBAR_MAX_HEALTH 5
+#define STATUSBAR_LAZERBAR_X_OFFSET 55
 
 class Hearts : public Entity {
   public:
@@ -34,7 +35,11 @@ class Hearts : public Entity {
 
 class StatusBar : public Entity {
   public:
-    StatusBar() {}
+    StatusBar() {
+      this->_lazerBar.setBitmap(lazerbar_plus_mask, 1);
+      this->_lazerBar.pos.x = STATUSBAR_LAZERBAR_X_OFFSET;
+      this->_lazerBar.pos.y = 0;
+    }
 
     virtual void update() {
       this->_hearts.update();
@@ -65,11 +70,10 @@ class StatusBar : public Entity {
     }
 
     void renderMeter() {
-      arduboy.drawRect(50, 0, 32, 5);
-      arduboy.fillRect(51, 1, 30, 3, BLACK);
+      this->_lazerBar.render();
       static uint8_t level = 0;
-      if (++level == 31) level = 0;
-      arduboy.drawRect(51, 2, level, 1, WHITE);
+      if (++level == 19) level = 0;
+      arduboy.drawRect(STATUSBAR_LAZERBAR_X_OFFSET + 2, 2, level, 1, WHITE);
     }
 
     void setHealth(const uint8_t health) {
@@ -78,6 +82,7 @@ class StatusBar : public Entity {
 
   private:
     Hearts _hearts;
+    Sprite _lazerBar;
 };
 
 #endif // STATUSBAR_H
