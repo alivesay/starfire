@@ -18,6 +18,7 @@ struct EnemyData {
     uint8_t frameCount;
     uint8_t frameDelay;
     uint8_t speed;
+    uint8_t health;
 };
 
 const EnemyData enemyData[3] = {
@@ -28,7 +29,8 @@ const EnemyData enemyData[3] = {
     height: 16,
     frameCount: 2,
     frameDelay: 40,
-    speed: 1
+    speed: 1,
+    health: 5
   },
   // mark 1
   {
@@ -37,7 +39,8 @@ const EnemyData enemyData[3] = {
     height: 28,
     frameCount: 2,
     frameDelay: 40,
-    speed: 1
+    speed: 1,
+    health: 20
   },
   // mark 3
   {
@@ -46,11 +49,12 @@ const EnemyData enemyData[3] = {
     height: 9,
     frameCount: 2,
     frameDelay: 40,
-    speed: 2
+    speed: 2,
+    health: 2
   },
 };
 
-enum EnemyState {
+enum EnemyMoveState {
   Idle,
   FlyingIn,
   FlyingUp,
@@ -59,11 +63,18 @@ enum EnemyState {
 
 class Enemy : public Entity {
   public:
-    Enemy() : _state(EnemyState::Idle) {
+    uint8_t health;
+
+    Enemy() : _state(EnemyMoveState::Idle) {
       this->_sprite.setParent(this);
     }
 
     void render() {
+      if (this->isHit()) {
+        this->setHit(false);
+        return;
+      }
+
       this->_sprite.render();
     }
 
@@ -71,6 +82,7 @@ class Enemy : public Entity {
       this->_sprite.setBitmap(enemyData[type].bitmap, enemyData[type].frameCount);
       this->_sprite.autoPlay(enemyData[type].frameDelay);
       this->_type = type;
+      this->health = enemyData[type].health;
     }
 
     uint8_t getType() {
@@ -81,11 +93,11 @@ class Enemy : public Entity {
       return enemyData[this->_type].speed;
     }
 
-    EnemyState getState() {
+    EnemyMoveState getState() {
       return this->_state;
     }
 
-    void setState(EnemyState state) {
+    void setState(EnemyMoveState state) {
       this->_state = state;
     }
 
@@ -97,10 +109,17 @@ class Enemy : public Entity {
       return enemyData[this->_type].height;
     }
 
+    bool hit(uint8_t damage) {
+      this->setHit(true);
+      this->health -= damage;
+
+      return this->health == 0;
+    }
+
   private:
     Sprite _sprite;
     uint8_t _type;
-    EnemyState _state;
+    EnemyMoveState _state;
 };
 
 #endif // ENEMY_H

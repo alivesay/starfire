@@ -4,6 +4,7 @@
 #include "globals.h"
 
 #define ENTITY_FLAG_ISACTIVE 0
+#define ENTITY_FLAG_ISHIT 1
 
 class Entity {
   public:
@@ -28,11 +29,19 @@ class Entity {
     }
 
     bool isActive() {
-      return (this->_flags >> ENTITY_FLAG_ISACTIVE) & 1;
+      return bitRead(this->_flags, ENTITY_FLAG_ISACTIVE);
     }
 
     void setActive(bool isActive) {
-      this->_flags = (this->_flags | (1 << ENTITY_FLAG_ISACTIVE)) & (isActive << ENTITY_FLAG_ISACTIVE);
+      bitWrite(this->_flags, ENTITY_FLAG_ISACTIVE, isActive);
+    }
+
+    bool isHit() {
+      return bitRead(this->_flags, ENTITY_FLAG_ISHIT);
+    }
+
+    void setHit(bool isHit) {
+      bitWrite(this->_flags, ENTITY_FLAG_ISHIT, isHit);
     }
 
     private:

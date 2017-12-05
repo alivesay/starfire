@@ -4,6 +4,7 @@
 #include "statusbar.h"
 #include "entity.h"
 #include "stages.h"
+#include "collide.h"
 
 Starfield starfield;
 Ship ship;
@@ -31,24 +32,18 @@ void loop() {
     title.render();
     if (arduboy.pressed(A_BUTTON) || arduboy.pressed(B_BUTTON)) atTitle = false;
   } else {
-  starfield.update();
-  Stages::update();
-  ship.update();
-  statusBar.update();
+    Collide::checkPlayerHit();
+    Collide::checkEnemyHit();
+    starfield.update();
+    Stages::update();
+    ship.update();
+    statusBar.update();
 
-  starfield.render();
-  Stages::render();
-  ship.render();
-  statusBar.render();
-/*
-  if(arduboy.pressed(A_BUTTON)) {
-    arduboy.fillRoundRect(1, 31, 126, 32, 1, WHITE);
-    arduboy.setCursor(10, 40);
-    arduboy.setTextColor(BLACK);
-    arduboy.setTextBackground(WHITE);
-    arduboy.print("Example Text");
+    starfield.render();
+    Stages::render();
+    ship.render();
+    statusBar.render();
   }
-*/
-}
+
   arduboy.display();
 }

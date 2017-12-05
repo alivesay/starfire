@@ -9,7 +9,8 @@ Enemy enemies[ENEMY_MAX_COUNT];
 class EnemyManager {
   public:
     static void update() {
-
+      // detect collision
+      // enemy takes damage on hit
       for (uint8_t i = 0; i < ENEMY_MAX_COUNT; i++) {
         if (enemies[i].isActive() && enemies[i].pos.x <= -pgm_read_byte(&enemyData[enemies[i].getType()].bitmap[0])) {
           enemies[i].setActive(false);
@@ -47,32 +48,32 @@ class EnemyManager {
       }
     }
 
-    static void flyUpDown(uint8_t start, uint8_t end) {
+    static void flyUpDown(uint8_t start, uint8_t end, uint8_t x) {
       for (uint8_t i = start; i < end; i++) {
         // fly in from the right
-        if (enemies[i].pos.x > (WIDTH - enemies[i].getWidth())) {
-          enemies[i].setState(EnemyState::FlyingIn);
+        if (enemies[i].pos.x > x) {
+          enemies[i].setState(EnemyMoveState::FlyingIn);
         } else {
           // initial direction
-          if (enemies[i].getState() == EnemyState::FlyingIn) {
-            enemies[i].setState(EnemyState::FlyingUp);
+          if (enemies[i].getState() == EnemyMoveState::FlyingIn) {
+            enemies[i].setState(EnemyMoveState::FlyingUp);
           }
           // fly up and down
           if (enemies[i].pos.y < 4) {
-            enemies[i].setState(EnemyState::FlyingDown);
+            enemies[i].setState(EnemyMoveState::FlyingDown);
           } else if (enemies[i].pos.y > (HEIGHT - enemies[i].getHeight() - 4)) {
-            enemies[i].setState(EnemyState::FlyingUp);
+            enemies[i].setState(EnemyMoveState::FlyingUp);
           }
         }
 
         switch (enemies[i].getState()) {
-          case EnemyState::FlyingIn:
+          case EnemyMoveState::FlyingIn:
             enemies[i].pos.x -= enemies[i].getSpeed();
             break;
-          case EnemyState::FlyingDown:
+          case EnemyMoveState::FlyingDown:
             enemies[i].pos.y += enemies[i].getSpeed();
             break;
-          case EnemyState::FlyingUp:
+          case EnemyMoveState::FlyingUp:
             enemies[i].pos.y -= enemies[i].getSpeed();
             break;
         }

@@ -5,6 +5,7 @@
 #include "entity.h"
 #include "timer.h"
 #include "sprite.h"
+#include "enemy.h"
 
 #define SHIP_SHIELD_DELAY 200
 #define SHIP_SHIELD_X_OFFSET 9
@@ -13,9 +14,11 @@
 #define SHIP_FRAME_DELAY 40
 #define SHIP_SPRITE_VISIBLE_WIDTH 13
 #define SHIP_SPRITE_VISIBLE_HEIGHT 9
+#define SHIP_BULLET_WIDTH 4
+#define SHIP_BULLET_HEIGHT 3
 #define SHIP_BULLET_X_OFFSET 16
 #define SHIP_BULLET_Y_OFFSET 3
-#define SHIP_MAX_BULLETS 7
+#define SHIP_MAX_BULLET_COUNT 7
 #define SHIP_LASER_X_OFFSET 16
 #define SHIP_LASER_Y_OFFSET -20
 #define SHIP_LASER_DELAY 40
@@ -55,58 +58,66 @@ class Bullet : public Entity {
     }
 };
 
+Bullet bullets[SHIP_MAX_BULLET_COUNT];
+
 class BulletEmitter : public Entity {
   public:
     BulletEmitter() :
     _bulletSpeed(5),
     _fireDelay(100),
-    _bulletTimer(20),
-    _activeCount(0) {
+    _bulletTimer(20)
+    {
       this->pos.x = SHIP_BULLET_X_OFFSET;
       this->pos.y = SHIP_BULLET_Y_OFFSET;
     }
 
+    uint8_t getBulletCount() {
+      uint8_t count = 0;
+      for (uint8_t i = 0; i < SHIP_MAX_BULLET_COUNT; i++) {
+        if (bullets[i].isActive()) count++;
+      }
+
+      return count;
+    }
+
     virtual void update() {
-      if (this->_fireDelay.tick() && arduboy.pressed(B_BUTTON) && this->_activeCount < SHIP_MAX_BULLETS) {
+      if (this->_fireDelay.tick() && arduboy.pressed(B_BUTTON) && this->getBulletCount() < SHIP_MAX_BULLET_COUNT) {
 
         Bullet* bullet = this->_getFreeBullet();
         if (bullet != nullptr) {
           bullet->pos.x = this->getScreenX();
           bullet->pos.y = this->getScreenY();
           bullet->setActive(true);
-          this->_activeCount++;
         }
       }
 
       if (!(this->_bulletTimer.tick())) return;
 
-      for (uint8_t i = 0; i < SHIP_MAX_BULLETS; i++) {
-        if (this->_bullets[i].isActive()) {
-          this->_bullets[i].pos.x += this->_bulletSpeed;
-          if (this->_bullets[i].pos.x >= WIDTH) {
-            this->_bullets[i].setActive(false);
-            this->_activeCount--;
+      for (uint8_t i = 0; i < SHIP_MAX_BULLET_COUNT; i++) {
+        if (bullets[i].isActive()) {
+          bullets[i].pos.x += this->_bulletSpeed;
+          // is offscreen
+          if (bullets[i].pos.x >= WIDTH) {
+            bullets[i].setActive(false);
           }
         }
       }
     }
 
     virtual void render() {
-      for (uint8_t i = 0; i < SHIP_MAX_BULLETS; i++) {
-        if (this->_bullets[i].isActive()) this->_bullets[i].render();
+      for (uint8_t i = 0; i < SHIP_MAX_BULLET_COUNT; i++) {
+        if (bullets[i].isActive()) bullets[i].render();
       }
     }
 
   private:
-    Bullet _bullets[SHIP_MAX_BULLETS];
     uint8_t _bulletSpeed;
     Timer _fireDelay;
     Timer _bulletTimer;
-    uint8_t _activeCount;
 
     Bullet* _getFreeBullet() {
-      for (uint8_t i = 0; i < SHIP_MAX_BULLETS; i++) {
-        if (!(this->_bullets[i].isActive())) return &this->_bullets[i];
+      for (uint8_t i = 0; i < SHIP_MAX_BULLET_COUNT; i++) {
+        if (!(bullets[i].isActive())) return &bullets[i];
       }
 
       return nullptr;
@@ -122,6 +133,8 @@ class Ship : public Entity {
     bool _laserFiring;
 
   public:
+    uint8_t health;
+
     Ship() :
     _laserFiring(false) {
       this->pos.x = 10;
