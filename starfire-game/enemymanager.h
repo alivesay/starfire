@@ -31,11 +31,10 @@ class EnemyManager {
       }
     }
 
-    static void flySineRightLeft(uint8_t start, uint8_t end) {
+    static void flySineRightLeft(uint8_t start, uint8_t end, uint8_t xOffset) {
       for (uint8_t i = start; i < end; i++) {
         enemies[i].pos.x -= enemies[i].getSpeed();
-        //enemies[i].pos.y = sin(arduboy.frameCount * 0.05) * 16 + 24;
-        enemies[i].pos.y = sin(enemies[i].pos.x * 0.05) * 16 + 24;
+        enemies[i].pos.y = sin((enemies[i].pos.x + xOffset)* 0.05) * 16 + 24;
       }
     }
 
@@ -45,10 +44,10 @@ class EnemyManager {
       }
     }
 
-    static void flyUpDown(uint8_t start, uint8_t end, uint8_t x) {
+    static void flyUpDown(uint8_t start, uint8_t end, uint8_t xOffset) {
       for (uint8_t i = start; i < end; i++) {
         // fly in from the right
-        if (enemies[i].pos.x > x) {
+        if (enemies[i].pos.x > xOffset) {
           enemies[i].setState(EnemyMoveState::FlyingIn);
         } else {
           // initial direction
@@ -77,5 +76,6 @@ class EnemyManager {
       }
     }
 };
+
 
 #endif // ENEMYMANAGER_H

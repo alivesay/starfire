@@ -5,6 +5,7 @@
 
 #define ENTITY_FLAG_ISACTIVE 0
 #define ENTITY_FLAG_ISHIT 1
+#define ENTITY_FLAG_ISDYING 2
 
 class Entity {
   public:
@@ -42,6 +43,30 @@ class Entity {
 
     void setHit(bool isHit) {
       bitWrite(this->_flags, ENTITY_FLAG_ISHIT, isHit);
+    }
+
+    bool isDying() {
+      return bitRead(this->_flags, ENTITY_FLAG_ISDYING);
+    }
+
+    void setDying(bool isDying) {
+      bitWrite(this->_flags, ENTITY_FLAG_ISDYING, isDying);
+    }
+
+    void setFlags(uint8_t flags) {
+      this->_flags = flags;
+    }
+
+    void setCurrentFrame(uint8_t frame) {
+      this->_flags = (this->_flags & 0b00001111) | (frame << 4);
+    }
+
+    uint8_t getCurrentFrame() {
+      return this->_flags >> 4;
+    }
+
+    void advanceFrame() {
+      this->setCurrentFrame(this->getCurrentFrame() + 1);
     }
 
     private:

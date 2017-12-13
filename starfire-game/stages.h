@@ -60,7 +60,7 @@ class Stages {
         EnemyManager::spawnRandom(ENEMY_MARK_0, 0, 3, 20);
         EnemyManager::spawnRandom(ENEMY_MARK_3, 3, ENEMY_MAX_COUNT, 20);
       }
-      EnemyManager::flySineRightLeft(0, 3);
+      EnemyManager::flySineRightLeft(0, 3, 0);
       EnemyManager::flyRightLeft(3, ENEMY_MAX_COUNT);
       Stages::checkWaveEnd();
     }
@@ -76,9 +76,11 @@ class Stages {
 
     static void wave002() {
       if (Stages::checkWaveStart()) {
-        EnemyManager::spawnRandom(ENEMY_MARK_3, 0, ENEMY_MAX_COUNT, 20);
+        EnemyManager::spawnRandom(ENEMY_MARK_3, 0, 5, 20);
+        EnemyManager::spawnRandom(ENEMY_MARK_3, 5, ENEMY_MAX_COUNT, 20);
       }
-      EnemyManager::flySineRightLeft(0, ENEMY_MAX_COUNT);
+      EnemyManager::flySineRightLeft(0, 5, 0);
+      EnemyManager::flySineRightLeft(5, ENEMY_MAX_COUNT, 24);
       Stages::checkWaveEnd();
     }
 };

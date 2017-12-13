@@ -23,6 +23,8 @@
 #define SHIP_LASER_Y_OFFSET -20
 #define SHIP_LASER_DELAY 40
 
+#define SHIP_FLAG_LASERFIRING 0
+
 class ShipShield : public Entity {
   private:
     Timer _shieldTimer;
@@ -130,13 +132,13 @@ class Ship : public Entity {
     Sprite _laserSprite;
     ShipShield _shipShield;
     BulletEmitter _bulletEmitter;
-    bool _laserFiring;
+    uint8_t _flags;
 
   public:
     uint8_t health;
 
     Ship() :
-    _laserFiring(false) {
+    _flags(false) {
       this->pos.x = 10;
       this->pos.y = 30;
 
@@ -168,19 +170,29 @@ class Ship : public Entity {
           this->pos.y = min(this->pos.y + 1, HEIGHT - SHIP_SPRITE_VISIBLE_HEIGHT);
       }
 
-      this->_laserFiring = arduboy.pressed(A_BUTTON);
-      if (this->_laserFiring) this->_laserSprite.update();
+      this->setLaserFiring(arduboy.pressed(A_BUTTON));
+      if (this->isLaserFiring()) this->_laserSprite.update();
       this->_sprite.update();
       this->_shipShield.update();
       this->_bulletEmitter.update();
     }
 
     virtual void render() {
-      if (this->_laserFiring) this->_laserSprite.render();
+      if (this->isLaserFiring()) this->_laserSprite.render();
       this->_sprite.render();
       this->_shipShield.render();
       this->_bulletEmitter.render();
     }
+
+    bool isLaserFiring() {
+      return bitRead(this->_flags, SHIP_FLAG_LASERFIRING);
+    }
+
+    void setLaserFiring(bool isFiring) {
+      bitWrite(this->_flags, SHIP_FLAG_LASERFIRING, isFiring);
+    }
 };
+
+Ship ship;
 
 #endif // SHIP_H

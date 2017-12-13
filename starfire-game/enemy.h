@@ -4,7 +4,7 @@
 #include "sprite.h"
 #include "timer.h"
 
-#define ENEMY_MAX_COUNT 5
+#define ENEMY_MAX_COUNT 10
 #define ENEMY_FRAME_DELAY 40
 
 #define ENEMY_MARK_0 0
@@ -63,7 +63,7 @@ enum EnemyMoveState {
 
 class Enemy : public Entity {
   public:
-    uint8_t health;
+    int8_t health;
 
     Enemy() : _state(EnemyMoveState::Idle) {
       this->_sprite.setParent(this);
@@ -76,6 +76,10 @@ class Enemy : public Entity {
       }
 
       this->_sprite.render();
+
+      if (this->isDying() && this->_sprite.isDonePlaying()) {
+        this->setActive(false);
+      }
     }
 
     void setType(uint8_t type) {
@@ -83,6 +87,7 @@ class Enemy : public Entity {
       this->_sprite.autoPlay(enemyData[type].frameDelay);
       this->_type = type;
       this->health = enemyData[type].health;
+      this->setFlags(0);
     }
 
     uint8_t getType() {
@@ -110,10 +115,20 @@ class Enemy : public Entity {
     }
 
     bool hit(uint8_t damage) {
+      bool isDead;
       this->setHit(true);
       this->health -= damage;
 
-      return this->health == 0;
+      isDead = this->health <= 0;
+
+      if (isDead) {
+        this->_sprite.setBitmap(smallboom_plus_mask, 7);
+        this->_sprite.autoPlay(60);
+        this->_sprite.setPlayOnce(true);
+        this->setDying(true);
+      }
+
+      return isDead;
     }
 
   private:

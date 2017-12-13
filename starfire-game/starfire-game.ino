@@ -7,7 +7,6 @@
 #include "collide.h"
 
 Starfield starfield;
-Ship ship;
 StatusBar statusBar;
 Sprite title;
 
